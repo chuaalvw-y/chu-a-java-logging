@@ -6,6 +6,7 @@ sensitive-data masking, request/response logging, and static deployment metadata
 all wired automatically through Spring Boot auto-configuration.
 
 - Target: **Java 17+**, **Spring Boot 3.x**
+- Build: **Gradle (Kotlin DSL)** — multi-project, Spring dependency-management BOM
 - Base package: `com.company.platform.logging`
 - Backend: **SLF4J + Logback** (the Spring Boot default)
 
@@ -20,7 +21,10 @@ all wired automatically through Spring Boot auto-configuration.
 
 ```
 platform-logging-parent/
+├── settings.gradle.kts
+├── build.gradle.kts                     (root: toolchain, BOM, plugins)
 ├── platform-logging-core/
+│   ├── build.gradle.kts
 │   └── src/main/java/com/company/platform/logging/
 │       ├── api/PlatformLogger.java                 (optional convenience facade)
 │       ├── autoconfigure/LoggingAutoConfiguration.java
@@ -33,13 +37,34 @@ platform-logging-parent/
 │       ├── metadata/LoggingMetadataInitializer.java
 │       └── web/RequestLoggingFilter.java
 └── platform-logging-example/
+    └── build.gradle.kts
 ```
 
 ---
 
 ## Getting started
 
-### Maven
+### Gradle (Kotlin DSL — primary)
+
+```kotlin
+dependencies {
+    implementation("com.company.platform:platform-logging-core:1.0.0-SNAPSHOT")
+
+    // Required if you use the bundled JSON appender (platform-logging-json.xml)
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+}
+```
+
+### Gradle (Groovy DSL)
+
+```groovy
+dependencies {
+    implementation 'com.company.platform:platform-logging-core:1.0.0-SNAPSHOT'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+}
+```
+
+### Maven (equivalent)
 
 ```xml
 <dependency>
@@ -47,20 +72,11 @@ platform-logging-parent/
     <artifactId>platform-logging-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
-
-<!-- Required if you use the bundled JSON appender (platform-logging-json.xml) -->
 <dependency>
     <groupId>net.logstash.logback</groupId>
     <artifactId>logstash-logback-encoder</artifactId>
     <version>7.4</version>
 </dependency>
-```
-
-### Gradle
-
-```kotlin
-implementation("com.company.platform:platform-logging-core:1.0.0-SNAPSHOT")
-implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 ```
 
 No `@Enable…` annotation is needed. Spring Boot picks up
@@ -264,7 +280,9 @@ A full runnable service lives in `platform-logging-example/`.
 ## Building and testing
 
 ```bash
-mvn -q clean verify
+./gradlew clean build           # compile + test both modules
+./gradlew :platform-logging-core:test
+./gradlew :platform-logging-example:bootRun   # run the example service
 ```
 
 Unit tests cover:
