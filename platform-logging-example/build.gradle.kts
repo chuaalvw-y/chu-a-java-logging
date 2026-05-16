@@ -1,16 +1,13 @@
 plugins {
     application
-    id("org.springframework.boot")
 }
 
 description = "Sample Spring Boot service consuming platform-logging-core."
 
-val logstashEncoderVersion = "7.4"
-
 dependencies {
     implementation(project(":platform-logging-core"))
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

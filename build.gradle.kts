@@ -1,12 +1,12 @@
 plugins {
-    java
-    id("org.springframework.boot") version "3.3.4" apply false
     id("io.spring.dependency-management") version "1.1.6" apply false
 }
 
+val springBootVersion: String by project
+
 allprojects {
-    group = "com.company.platform"
-    version = "1.0.0-SNAPSHOT"
+    group = "com.chua"
+    version = "1.0.0"
 
     repositories {
         mavenCentral()
@@ -25,16 +25,25 @@ subprojects {
 
     the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
         imports {
-            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+            mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
         }
     }
 
     tasks.withType<JavaCompile>().configureEach {
-        options.compilerArgs.add("-parameters")
         options.encoding = "UTF-8"
+        // -parameters helps @ConfigurationProperties constructor binding & SpEL.
+        options.compilerArgs.add("-parameters")
+    }
+
+    tasks.withType<Javadoc>().configureEach {
+        options.encoding = "UTF-8"
+        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }
 
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
     }
 }

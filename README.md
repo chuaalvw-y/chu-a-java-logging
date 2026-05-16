@@ -44,11 +44,13 @@ platform-logging-parent/
 
 ## Getting started
 
+Published coordinates: **`com.chua:platform-logging-core:1.0.0`**
+
 ### Gradle (Kotlin DSL — primary)
 
 ```kotlin
 dependencies {
-    implementation("com.company.platform:platform-logging-core:1.0.0-SNAPSHOT")
+    implementation("com.chua:platform-logging-core:1.0.0")
 
     // Required if you use the bundled JSON appender (platform-logging-json.xml)
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
@@ -59,7 +61,7 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.company.platform:platform-logging-core:1.0.0-SNAPSHOT'
+    implementation 'com.chua:platform-logging-core:1.0.0'
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 }
 ```
@@ -68,9 +70,9 @@ dependencies {
 
 ```xml
 <dependency>
-    <groupId>com.company.platform</groupId>
+    <groupId>com.chua</groupId>
     <artifactId>platform-logging-core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 <dependency>
     <groupId>net.logstash.logback</groupId>
@@ -277,13 +279,30 @@ A full runnable service lives in `platform-logging-example/`.
 
 ---
 
-## Building and testing
+## Build & Publish
+
+The build uses the **Gradle wrapper (8.10.2)** — no local Gradle install required. The Spring Boot
+version comes from `gradle.properties` (`springBootVersion=3.3.5`); bump it there to upgrade.
 
 ```bash
-./gradlew clean build           # compile + test both modules
-./gradlew :platform-logging-core:test
-./gradlew :platform-logging-example:bootRun   # run the example service
+./gradlew clean build                                  # compile + test both modules
+./gradlew :platform-logging-core:test                  # core tests only
+./gradlew :platform-logging-example:run                # run the example service
+
+./gradlew publishToMavenLocal                          # → ~/.m2/repository/com/chua/platform-logging-core/1.0.0/
+./gradlew publish                                      # uses gradle.properties default localRepoUrl
+./gradlew publish -PlocalRepoUrl=file:///other/path    # override per env (Windows: file:///C:/path)
 ```
+
+Published coordinates: **`com.chua:platform-logging-core:1.0.0`** — jar, sources jar, javadoc jar,
+POM, and Gradle module metadata. The `platform-logging-example` module is sample code and is **not**
+published.
+
+### Local repository configuration
+
+`gradle.properties` defines a default `localRepoUrl` shared by the team. Override it on the command
+line with `-PlocalRepoUrl=...` for ad-hoc targets — there is no environment-specific value baked
+into the build.
 
 Unit tests cover:
 
