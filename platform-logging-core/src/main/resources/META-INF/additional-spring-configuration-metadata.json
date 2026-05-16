@@ -1,0 +1,37 @@
+{
+  "groups": [
+    {
+      "name": "platform.logging",
+      "type": "com.company.platform.logging.config.LoggingProperties",
+      "description": "Platform logging library configuration."
+    }
+  ],
+  "properties": [
+    {
+      "name": "platform.logging.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Master switch for the platform logging library."
+    },
+    {
+      "name": "platform.logging.metadata.application-name",
+      "type": "java.lang.String",
+      "description": "Application name stamped into MDC. Falls back to spring.application.name."
+    },
+    {
+      "name": "platform.logging.metadata.environment",
+      "type": "java.lang.String",
+      "description": "Environment name stamped into MDC. Falls back to spring.profiles.active."
+    },
+    {
+      "name": "platform.logging.metadata.version",
+      "type": "java.lang.String",
+      "description": "Application version stamped into MDC."
+    },
+    {
+      "name": "platform.logging.metadata.host",
+      "type": "java.lang.String",
+      "description": "Host or container identifier. Defaults to InetAddress.getLocalHost()."
+    }
+  ]
+}

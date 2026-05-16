@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false">
+
+    <springProperty scope="context" name="PLATFORM_APP_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="PLATFORM_ENV" source="spring.profiles.active"/>
+
+    <!--
+      Pick the appender per profile:
+        - local/dev:     PLATFORM_CONSOLE (human-readable, with correlationId)
+        - everything else (prod / staging / k8s / openshift): PLATFORM_JSON (Splunk-ready)
+    -->
+    <include resource="com/company/platform/logging/logback/platform-logging-console.xml"/>
+    <include resource="com/company/platform/logging/logback/platform-logging-json.xml"/>
+
+    <springProfile name="local | dev">
+        <root level="INFO">
+            <appender-ref ref="PLATFORM_CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!local &amp; !dev">
+        <root level="INFO">
+            <appender-ref ref="PLATFORM_JSON"/>
+        </root>
+    </springProfile>
+
+</configuration>

@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: orders-service
+  profiles:
+    active: ${ENVIRONMENT:local}
+
+server:
+  port: 8080
+
+# All values shown are defaults — included here for documentation and overrideability.
+platform:
+  logging:
+    enabled: true
+
+    metadata:
+      application-name: ${spring.application.name}
+      environment: ${spring.profiles.active}
+      version: ${APP_VERSION:0.0.0-dev}
+      # host: resolved from InetAddress.getLocalHost() when blank
+
+    correlation:
+      enabled: true
+      header-name: X-Correlation-Id
+      mdc-key: correlationId
+      generate-if-missing: true
+      include-in-response: true
+
+    request-logging:
+      enabled: true
+      include-query-string: true
+      include-headers: false
+      include-payload: false
+      max-payload-length: 2048
+      excluded-paths:
+        - /actuator/**
+        - /health
+        - /metrics
+
+    masking:
+      enabled: true
+      mask: "****"
+      # Field names additive to defaults; setting this replaces the default list.
+      sensitive-fields:
+        - password
+        - token
+        - accessToken
+        - refreshToken
+        - apiKey
+        - authorization
+        - ssn
+        - taxId
+        - accountNumber
+        - cardNumber
+        - cvv
+      sensitive-headers:
+        - Authorization
+        - Cookie
+        - X-Api-Key
+      # Optional free-form regex patterns. Group 1 is masked if present, else the whole match.
+      additional-patterns: []
+
+logging:
+  level:
+    root: INFO
+    com.company.platform.logging: INFO
