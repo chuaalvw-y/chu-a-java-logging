@@ -1,0 +1,14 @@
+platform:
+  logging:
+    request-logging:
+      include-headers: false
+      include-payload: false
+
+management:
+  endpoint:
+    health:
+      show-details: when_authorized
+
+logging:
+  level:
+    com.company.platform.logging: INFO

@@ -4,8 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import com.company.platform.logging.config.LoggingProperties;
 import org.junit.jupiter.api.Test;
+
+import com.company.platform.logging.config.LoggingProperties;
 
 class RegexSensitiveDataMaskerTest {
 

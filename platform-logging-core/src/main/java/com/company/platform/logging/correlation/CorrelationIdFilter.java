@@ -2,13 +2,15 @@ package com.company.platform.logging.correlation;
 
 import java.io.IOException;
 
-import com.company.platform.logging.config.LoggingProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.company.platform.logging.config.LoggingProperties;
 
 /**
  * Reads or generates a correlation ID per request, binds it to MDC, and optionally echoes

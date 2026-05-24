@@ -1,0 +1,9 @@
+platform:
+  logging:
+    request-logging:
+      include-headers: true
+      include-payload: true
+
+logging:
+  level:
+    com.company.platform.logging: DEBUG

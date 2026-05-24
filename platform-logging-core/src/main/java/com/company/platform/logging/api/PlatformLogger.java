@@ -2,10 +2,11 @@ package com.company.platform.logging.api;
 
 import java.util.Map;
 
-import com.company.platform.logging.masking.SensitiveDataMasker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import com.company.platform.logging.masking.SensitiveDataMasker;
 
 /**
  * Optional convenience facade. SLF4J is the primary API and remains fully supported

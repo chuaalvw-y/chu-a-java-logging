@@ -7,12 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.company.platform.logging.config.LoggingProperties;
-import com.company.platform.logging.masking.SensitiveDataMasker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -21,6 +20,9 @@ import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
+
+import com.company.platform.logging.config.LoggingProperties;
+import com.company.platform.logging.masking.SensitiveDataMasker;
 
 /**
  * Logs one structured line per HTTP request including method, path, status, duration, and
@@ -66,7 +68,10 @@ public class RequestLoggingFilter extends OncePerRequestFilter implements Ordere
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         boolean capturePayload = config.isIncludePayload();
-        HttpServletRequest requestToUse = capturePayload ? new ContentCachingRequestWrapper(request) : request;
+        // Cap how much the wrapper buffers so a huge upload can't OOM us — we only ever log up to maxPayloadLength.
+        HttpServletRequest requestToUse = capturePayload
+                ? new ContentCachingRequestWrapper(request, config.getMaxPayloadLength())
+                : request;
         HttpServletResponse responseToUse = capturePayload ? new ContentCachingResponseWrapper(response) : response;
 
         long start = System.nanoTime();

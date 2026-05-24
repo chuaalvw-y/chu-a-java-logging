@@ -6,16 +6,18 @@ import static org.mockito.Mockito.doAnswer;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.company.platform.logging.config.LoggingProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.MDC;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.mockito.Mockito;
+
+import com.company.platform.logging.config.LoggingProperties;
 
 class CorrelationIdFilterTest {
 
@@ -73,8 +75,9 @@ class CorrelationIdFilterTest {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(config.getHeaderName(), "x");
         FilterChain chain = Mockito.mock(FilterChain.class);
-        doAnswer(invocation -> { throw new RuntimeException("boom"); })
-                .when(chain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        doAnswer(invocation -> {
+            throw new RuntimeException("boom");
+        }).when(chain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         try {
             filter.doFilter(req, new MockHttpServletResponse(), chain);

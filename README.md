@@ -5,10 +5,13 @@ JSON structured logging for container stdout (Docker / Kubernetes / OpenShift / 
 sensitive-data masking, request/response logging, and static deployment metadata in MDC —
 all wired automatically through Spring Boot auto-configuration.
 
-- Target: **Java 17+**, **Spring Boot 3.x**
-- Build: **Gradle (Kotlin DSL)** — multi-project, Spring dependency-management BOM
+- **Java 21** LTS, **Spring Boot 4.0.6** (Spring Framework 7, Jakarta EE 11)
+- **Gradle 9.x** (Kotlin DSL) — multi-project, Spring dependency-management BOM
 - Base package: `com.company.platform.logging`
 - Backend: **SLF4J + Logback** (the Spring Boot default)
+- Quality gates: **Spotless** (format) + **Checkstyle 10.x** (hygiene)
+- Coordinates: **`com.chua.erp:chua-erp-platform-logging-core:1.0.0`**
+- Example service includes **Actuator**, **Micrometer / Prometheus**, **springdoc-openapi**, multi-env profiles, and Docker
 
 ---
 
@@ -44,16 +47,16 @@ platform-logging-parent/
 
 ## Getting started
 
-Published coordinates: **`com.chua:platform-logging-core:1.0.0`**
+Published coordinates: **`com.chua.erp:chua-erp-platform-logging-core:1.0.0`**
 
 ### Gradle (Kotlin DSL — primary)
 
 ```kotlin
 dependencies {
-    implementation("com.chua:platform-logging-core:1.0.0")
+    implementation("com.chua.erp:chua-erp-platform-logging-core:1.0.0")
 
     // Required if you use the bundled JSON appender (platform-logging-json.xml)
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 }
 ```
 
@@ -61,24 +64,9 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.chua:platform-logging-core:1.0.0'
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+    implementation 'com.chua.erp:chua-erp-platform-logging-core:1.0.0'
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.0'
 }
-```
-
-### Maven (equivalent)
-
-```xml
-<dependency>
-    <groupId>com.chua</groupId>
-    <artifactId>platform-logging-core</artifactId>
-    <version>1.0.0</version>
-</dependency>
-<dependency>
-    <groupId>net.logstash.logback</groupId>
-    <artifactId>logstash-logback-encoder</artifactId>
-    <version>7.4</version>
-</dependency>
 ```
 
 No `@Enable…` annotation is needed. Spring Boot picks up
@@ -281,28 +269,44 @@ A full runnable service lives in `platform-logging-example/`.
 
 ## Build & Publish
 
-The build uses the **Gradle wrapper (8.10.2)** — no local Gradle install required. The Spring Boot
-version comes from `gradle.properties` (`springBootVersion=3.3.5`); bump it there to upgrade.
+Uses the **Gradle 9.x wrapper** — no local Gradle install required. Versions are externalised to
+`gradle.properties`:
+
+| Property | Default | Purpose |
+| --- | --- | --- |
+| `springBootVersion` | `4.0.6` | BOM imported by every module |
+| `springdocOpenapiVersion` | `2.6.0` | OpenAPI starter (example only) |
+| `logstashEncoderVersion` | `8.0` | JSON encoder for Logback |
+| `micrometerTracingVersion` | `1.3.5` | Optional OTel correlation |
+| `localRepoUrl` | `file:///.../LocalMavenFeed` | Default `publish` target; override with `-PlocalRepoUrl=...` |
 
 ```bash
-./gradlew clean build                                  # compile + test both modules
-./gradlew :platform-logging-core:test                  # core tests only
-./gradlew :platform-logging-example:run                # run the example service
+./gradlew clean build                                  # compile + test + spotless + checkstyle
+./gradlew :platform-logging-example:bootRun            # run the example service
+./gradlew spotlessApply                                # auto-fix formatting
 
-./gradlew publishToMavenLocal                          # → ~/.m2/repository/com/chua/platform-logging-core/1.0.0/
+./gradlew publishToMavenLocal                          # → ~/.m2/.../com/chua/erp/chua-erp-platform-logging-core/1.0.0/
 ./gradlew publish                                      # uses gradle.properties default localRepoUrl
 ./gradlew publish -PlocalRepoUrl=file:///other/path    # override per env (Windows: file:///C:/path)
 ```
 
-Published coordinates: **`com.chua:platform-logging-core:1.0.0`** — jar, sources jar, javadoc jar,
-POM, and Gradle module metadata. The `platform-logging-example` module is sample code and is **not**
-published.
+Published coordinates: **`com.chua.erp:chua-erp-platform-logging-core:1.0.0`** — jar, sources jar,
+javadoc jar, POM, and Gradle module metadata. The `platform-logging-example` module is sample code
+and is **not** published.
 
-### Local repository configuration
+### Docker
 
-`gradle.properties` defines a default `localRepoUrl` shared by the team. Override it on the command
-line with `-PlocalRepoUrl=...` for ad-hoc targets — there is no environment-specific value baked
-into the build.
+```bash
+docker compose up --build           # builds the example image and starts on :8080
+curl http://localhost:8080/actuator/health
+curl http://localhost:8080/swagger-ui.html
+```
+
+### Environment profiles
+
+Set `ENVIRONMENT` (or `--spring.profiles.active=`) to one of `dev` / `test` / `qa` / `prod`. The
+example ships overrides for each: `dev` enables full request body logging and `show-details: always`
+for actuator health; `prod` restricts actuator exposure and turns header/payload logging off.
 
 Unit tests cover:
 

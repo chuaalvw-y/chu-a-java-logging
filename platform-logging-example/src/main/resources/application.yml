@@ -2,12 +2,12 @@ spring:
   application:
     name: orders-service
   profiles:
-    active: ${ENVIRONMENT:local}
+    active: ${ENVIRONMENT:dev}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
-# All values shown are defaults — included here for documentation and overrideability.
+# Defaults shown for documentation; per-environment overrides live in application-{profile}.yml.
 platform:
   logging:
     enabled: true
@@ -35,11 +35,12 @@ platform:
         - /actuator/**
         - /health
         - /metrics
+        - /v3/api-docs/**
+        - /swagger-ui/**
 
     masking:
       enabled: true
       mask: "****"
-      # Field names additive to defaults; setting this replaces the default list.
       sensitive-fields:
         - password
         - token
@@ -56,8 +57,26 @@ platform:
         - Authorization
         - Cookie
         - X-Api-Key
-      # Optional free-form regex patterns. Group 1 is masked if present, else the whole match.
       additional-patterns: []
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
 logging:
   level:

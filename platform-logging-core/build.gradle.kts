@@ -5,6 +5,9 @@ plugins {
 
 description = "Enterprise Spring Boot logging library: correlation IDs, sensitive-data masking, request logging, JSON stdout for Splunk."
 
+val logstashEncoderVersion: String by project
+val micrometerTracingVersion: String by project
+
 java {
     withSourcesJar()
     withJavadocJar()
@@ -16,20 +19,22 @@ dependencies {
 
     compileOnly("org.springframework:spring-web")
     compileOnly("jakarta.servlet:jakarta.servlet-api")
-    compileOnly("net.logstash.logback:logstash-logback-encoder:7.4")
-    compileOnly("io.micrometer:micrometer-tracing-bridge-otel:1.3.4")
+    compileOnly("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+    compileOnly("io.micrometer:micrometer-tracing-bridge-otel:$micrometerTracingVersion")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-web")
-    testImplementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    testImplementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 publishing {
     publications {
         create<MavenPublication>("library") {
+            // Group ID lives at the project level; override artifactId per the chua-erp- naming convention.
+            artifactId = "chua-erp-platform-logging-core"
             from(components["java"])
 
             versionMapping {
@@ -42,7 +47,7 @@ publishing {
             }
 
             pom {
-                name.set("Platform Logging Core")
+                name.set("Chua ERP — Platform Logging Core")
                 description.set(project.description)
             }
         }

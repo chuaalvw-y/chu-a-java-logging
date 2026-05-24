@@ -1,11 +1,13 @@
 plugins {
     id("io.spring.dependency-management") version "1.1.6" apply false
+    id("org.springframework.boot") version "4.0.6" apply false
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 val springBootVersion: String by project
 
 allprojects {
-    group = "com.chua"
+    group = "com.chua.erp"
     version = "1.0.0"
 
     repositories {
@@ -15,17 +17,41 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "checkstyle")
     apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "com.diffplug.spotless")
 
     extensions.configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
 
     the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
         imports {
             mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+        }
+    }
+
+    extensions.configure<CheckstyleExtension> {
+        toolVersion = "10.18.2"
+        configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+        isIgnoreFailures = false
+        maxWarnings = 0
+    }
+
+    extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        java {
+            target("src/**/*.java")
+            removeUnusedImports()
+            trimTrailingWhitespace()
+            endWithNewline()
+            importOrder("java", "javax", "jakarta", "org", "com", "")
+        }
+        kotlinGradle {
+            target("*.gradle.kts", "**/*.gradle.kts")
+            trimTrailingWhitespace()
+            endWithNewline()
         }
     }
 

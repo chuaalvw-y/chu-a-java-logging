@@ -3,12 +3,15 @@ package com.company.platform.logging.metadata;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import ch.qos.logback.classic.LoggerContext;
-import com.company.platform.logging.config.LoggingProperties;
 import jakarta.annotation.PostConstruct;
+
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+
+import com.company.platform.logging.config.LoggingProperties;
+
+import ch.qos.logback.classic.LoggerContext;
 
 /**
  * Stamps static deployment metadata into the Logback {@link LoggerContext} so every appender

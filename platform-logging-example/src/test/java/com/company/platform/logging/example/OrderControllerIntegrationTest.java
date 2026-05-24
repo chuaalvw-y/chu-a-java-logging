@@ -1,38 +1,56 @@
 package com.company.platform.logging.example;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+/**
+ * End-to-end test against the real Tomcat container so the full filter chain (correlation
+ * + request logging) actually runs. Uses the JDK HTTP client to avoid coupling to whatever
+ * Spring testing utility happens to ship in this Boot release.
+ */
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class OrderControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mvc;
+    @Value("${local.server.port}")
+    private int port;
+
+    private final HttpClient http = HttpClient.newHttpClient();
 
     @Test
     void getReturnsOrderAndEchoesCorrelationHeader() throws Exception {
-        MvcResult result = mvc.perform(get("/orders/abc-123")
-                        .header("X-Correlation-Id", "trace-xyz"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-Correlation-Id", "trace-xyz"))
-                .andReturn();
-        assertThat(result.getResponse().getContentAsString()).contains("abc-123");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:" + port + "/orders/abc-123"))
+                .header("X-Correlation-Id", "trace-xyz")
+                .GET()
+                .build();
+
+        HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.headers().firstValue("X-Correlation-Id")).contains("trace-xyz");
+        assertThat(response.body()).contains("abc-123");
     }
 
     @Test
     void generatesCorrelationIdWhenMissing() throws Exception {
-        mvc.perform(get("/orders/abc-123"))
-                .andExpect(status().isOk())
-                .andExpect(header().exists("X-Correlation-Id"));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:" + port + "/orders/abc-123"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.headers().firstValue("X-Correlation-Id")).isPresent();
+        assertThat(response.headers().firstValue("X-Correlation-Id").orElseThrow()).isNotBlank();
     }
 }

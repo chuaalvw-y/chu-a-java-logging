@@ -1,12 +1,7 @@
 package com.company.platform.logging.autoconfigure;
 
-import com.company.platform.logging.config.LoggingProperties;
-import com.company.platform.logging.correlation.CorrelationIdFilter;
-import com.company.platform.logging.masking.RegexSensitiveDataMasker;
-import com.company.platform.logging.masking.SensitiveDataMasker;
-import com.company.platform.logging.metadata.LoggingMetadataInitializer;
-import com.company.platform.logging.web.RequestLoggingFilter;
 import jakarta.servlet.Filter;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,6 +12,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.company.platform.logging.config.LoggingProperties;
+import com.company.platform.logging.correlation.CorrelationIdFilter;
+import com.company.platform.logging.masking.RegexSensitiveDataMasker;
+import com.company.platform.logging.masking.SensitiveDataMasker;
+import com.company.platform.logging.metadata.LoggingMetadataInitializer;
+import com.company.platform.logging.web.RequestLoggingFilter;
 
 /**
  * Wires the platform logging components and only contributes beans the user has not

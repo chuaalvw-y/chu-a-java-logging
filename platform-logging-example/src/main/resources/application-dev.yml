@@ -1,0 +1,15 @@
+platform:
+  logging:
+    request-logging:
+      include-headers: true
+      include-payload: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.company.platform.logging: DEBUG
+    com.company.platform.logging.example: DEBUG

@@ -2,14 +2,15 @@ package com.company.platform.logging.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+
 import com.company.platform.logging.config.LoggingProperties;
 import com.company.platform.logging.correlation.CorrelationIdFilter;
 import com.company.platform.logging.masking.SensitiveDataMasker;
 import com.company.platform.logging.metadata.LoggingMetadataInitializer;
 import com.company.platform.logging.web.RequestLoggingFilter;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 class LoggingAutoConfigurationTest {
 
