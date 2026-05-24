@@ -49,3 +49,5 @@ Thumbs.db
 
 # Claude Code workspace
 .claude
+
+*bin
