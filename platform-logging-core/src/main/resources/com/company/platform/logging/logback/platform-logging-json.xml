@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+Copyright (c) 2026 Alvin Wilsen Chan Chua
+GitHub: chuaalvw-y
+Licensed under the Alvin Wilsen Chan Chua Proprietary Use-Only License.
+See LICENSE.txt in the project root for full license information.
+-->
+<!--
     Drop-in JSON appender suitable for Docker / Kubernetes / OpenShift stdout collection.
     Splunk's HEC and the Universal Forwarder both consume this directly when configured
     with sourcetype=_json. See README "stdout vs Splunk ingestion" for details.

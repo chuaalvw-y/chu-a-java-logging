@@ -1,3 +1,8 @@
+// Copyright (c) 2026 Alvin Wilsen Chan Chua
+// GitHub: chuaalvw-y
+// Licensed under the Alvin Wilsen Chan Chua Proprietary Use-Only License.
+// See LICENSE.txt in the project root for full license information.
+
 plugins {
     id("io.spring.dependency-management") version "1.1.6" apply false
     id("org.springframework.boot") version "4.0.6" apply false
